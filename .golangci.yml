@@ -1,0 +1,99 @@
+version: 2
+
+run:
+  timeout: 5m
+  go: "1.23.0"
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  goconst:
+    min-len: 2
+    min-occurrences: 3
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+
+  gofumpt:
+    extra-rules: true
+
+  gosimple:
+    checks: ["all"]
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+      - shadow
+
+  revive:
+    rules:
+      - name: exported
+        disabled: true
+
+  staticcheck:
+    checks: ["all"]
+
+  unused:
+    check-exported: false
+
+  misspell:
+    locale: US
+
+  lll:
+    line-length: 120
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - gocritic
+    - revive
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - funlen
+        - gochecknoglobals
+        - gochecknoinits
+
+    # Exclude known linters from generated files.
+    - path: ".*\\.pb\\.go"
+      linters:
+        - maligned
+        - lll
+
+    # Disable linters that are annoying in tests.
+    - path: _test\.go
+      text: "should not use dot imports"
+
+    # Ignore fmt package usage in main and test files
+    - path: "(cmd/|_test\\.go)"
+      text: "should not use `fmt` package for output"
+
+  # Maximum issues count per one linter. Set to 0 to disable.
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text. Set to 0 to disable.
+  max-same-issues: 0
+
+  # Show only new issues: if there are unstaged changes or untracked files,
+  # only those changes are analyzed, else only changes in HEAD~ are analyzed.
+  new: false

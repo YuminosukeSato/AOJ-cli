@@ -1,0 +1,91 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task -l
+
+  build:
+    desc: Build the application
+    cmds:
+      - go build -o bin/aoj ./cmd/aojcli
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test ./...
+
+  test-v:
+    desc: Run all tests with verbose output
+    cmds:
+      - go test -v ./...
+
+  test-race:
+    desc: Run tests with race detection
+    cmds:
+      - go test -race ./...
+
+  test-cover:
+    desc: Run tests with coverage
+    cmds:
+      - go test -cover ./...
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run
+
+  lint-fix:
+    desc: Run golangci-lint with auto-fix
+    cmds:
+      - golangci-lint run --fix
+
+  fmt:
+    desc: Format code
+    cmds:
+      - go fmt ./...
+
+  tidy:
+    desc: Tidy go modules
+    cmds:
+      - go mod tidy
+
+  wire:
+    desc: Generate wire dependency injection
+    cmds:
+      - wire ./internal/infra/di/
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf bin/
+
+  dev:
+    desc: Development setup (fmt, tidy, wire, test, build)
+    cmds:
+      - task: fmt
+      - task: tidy
+      - task: wire
+      - task: test
+      - task: build
+
+  ci:
+    desc: CI pipeline (lint, test with race detection and coverage)
+    cmds:
+      - task: lint
+      - task: test-race
+      - task: test-cover
+      - task: build
+
+  install-tools:
+    desc: Install required development tools
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - go install github.com/google/wire/cmd/wire@latest
+      - go install github.com/go-task/task/v3/cmd/task@latest
+
+  install:
+    desc: Install the binary
+    cmds:
+      - go install ./cmd/aojcli
