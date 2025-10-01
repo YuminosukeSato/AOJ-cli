@@ -17,6 +17,7 @@ A command-line interface tool for [Aizu Online Judge (AOJ)](https://onlinejudge.
 ### Via Homebrew (macOS/Linux)
 
 ```bash
+brew tap YuminosukeSato/aoj-cli
 brew install aoj-cli
 ```
 
