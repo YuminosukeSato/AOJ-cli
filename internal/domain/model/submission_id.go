@@ -3,6 +3,7 @@ package model
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/YuminosukeSato/AOJ-cli/pkg/cerrors"
 )
@@ -23,7 +24,7 @@ func NewSubmissionID(value string) (SubmissionID, error) {
 	}
 
 	normalized := strings.TrimSpace(value)
-	
+
 	if !isValidSubmissionIDFormat(normalized) {
 		return SubmissionID{}, cerrors.NewAppError(
 			cerrors.CodeInvalidInput,
@@ -38,6 +39,15 @@ func NewSubmissionID(value string) (SubmissionID, error) {
 // NewSubmissionIDFromInt creates a new SubmissionID from an integer
 func NewSubmissionIDFromInt(id int64) SubmissionID {
 	return SubmissionID{value: strconv.FormatInt(id, 10)}
+}
+
+// GenerateSubmissionID generates a new submission ID
+// Note: In a real implementation, this would be assigned by the server
+// For now, we use a temporary client-side ID based on timestamp
+func GenerateSubmissionID() (SubmissionID, error) {
+	// Use Unix nano timestamp as temporary ID
+	timestamp := time.Now().UnixNano()
+	return NewSubmissionIDFromInt(timestamp), nil
 }
 
 // MustNewSubmissionID creates a new SubmissionID and panics on error
@@ -93,7 +103,7 @@ func (s SubmissionID) Equals(other SubmissionID) bool {
 func (s SubmissionID) Compare(other SubmissionID) int {
 	sInt, sErr := s.ToInt64()
 	otherInt, otherErr := other.ToInt64()
-	
+
 	if sErr != nil || otherErr != nil {
 		// Fallback to string comparison
 		if s.value < other.value {
@@ -103,7 +113,7 @@ func (s SubmissionID) Compare(other SubmissionID) int {
 		}
 		return 0
 	}
-	
+
 	if sInt < otherInt {
 		return -1
 	} else if sInt > otherInt {
@@ -127,7 +137,7 @@ func isValidSubmissionIDFormat(id string) bool {
 	if id == "" {
 		return false
 	}
-	
+
 	_, err := strconv.ParseInt(id, 10, 64)
 	return err == nil
 }

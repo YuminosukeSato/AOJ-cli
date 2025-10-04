@@ -52,8 +52,12 @@ func main() {
 	initCmd := cli.NewInitCommand(dependencies.InitUseCase)
 	initCommand := initCmd.Command()
 
+	// Create and add submit command
+	submitCmd := cli.NewSubmitCommand(dependencies.SubmitUseCase)
+	submitCommand := submitCmd.Command()
+
 	// Add subcommands to root
-	rootCmd.AddSubcommands(rootCommand, loginCommand, initCommand)
+	rootCmd.AddSubcommands(rootCommand, loginCommand, initCommand, submitCommand)
 
 	// Execute root command
 	err = rootCmd.Execute(rootCommand)
@@ -62,8 +66,9 @@ func main() {
 
 // Dependencies holds all application dependencies
 type Dependencies struct {
-	LoginUseCase *usecase.LoginUseCase
-	InitUseCase  *usecase.InitUseCase
+	LoginUseCase  *usecase.LoginUseCase
+	InitUseCase   *usecase.InitUseCase
+	SubmitUseCase *usecase.SubmitUseCase
 }
 
 // initializeDependencies initializes all application dependencies
@@ -71,14 +76,17 @@ func initializeDependencies(configDir string) *Dependencies {
 	// Initialize repositories
 	authRepo := repository.NewAOJAuthRepository(aojBaseURL)
 	sessionRepo := repository.NewLocalSessionRepository(configDir)
-	problemRepo := repository.NewMockProblemRepository() // TODO: Replace with real implementation
+	problemRepo := repository.NewAOJProblemRepository(aojBaseURL)
+	submissionRepo := repository.NewAOJSubmissionRepository(aojBaseURL)
 
 	// Initialize use cases
 	loginUseCase := usecase.NewLoginUseCase(authRepo, sessionRepo)
 	initUseCase := usecase.NewInitUseCase(problemRepo)
+	submitUseCase := usecase.NewSubmitUseCase(submissionRepo, sessionRepo)
 
 	return &Dependencies{
-		LoginUseCase: loginUseCase,
-		InitUseCase:  initUseCase,
+		LoginUseCase:  loginUseCase,
+		InitUseCase:   initUseCase,
+		SubmitUseCase: submitUseCase,
 	}
 }
